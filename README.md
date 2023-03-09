@@ -5,4 +5,4 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/0fa0b848fbe00652c705/maintainability)](https://codeclimate.com/github/pollyleyka/frontend-project-11/maintainability)
 
-[RSS agregator](https://frontend-project-11-mge65osh0-pollyleyka.vercel.app)
+[RSS agregator](https://frontend-project-11-aa8bfliu7-pollyleyka.vercel.app)
