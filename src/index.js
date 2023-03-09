@@ -1,41 +1,54 @@
-import keyBy from 'lodash/keyBy.js';
-// import has from 'lodash/has.js';
-import isEmpty from 'lodash/isEmpty.js';
 import './style.scss';
 import 'bootstrap';
 import * as yup from 'yup';
 import onChange from 'on-change';
-import app from './app';
+import render from './render.js';
 
-console.log('Hello, World!');
+const app = () => {
+  const elements = {
+    form: document.querySelector('form'),
+    urlInput: document.getElementById('url-input'),
+    submitButton: document.querySelector('button[type="submit"]'),
+    feedbackString: document.querySelector('.feedback'),
+  };
 
-const schema = yup.object().shape({
-  url: yup.string().trim().required().url().notOneOf(state.links, 'RSS уже существует'),
-});
-const validate = (url) => {
-  try {
-    schema.validateSync(url, { abortEarly: false });
-    return {};
-  } catch (e) {
-    return keyBy(e.inner, 'path');
-  }
-};
-
-export default () => {
+  // Модель ничего не знает о контроллерах и о представлении. В ней не хранятся DOM-элементы.
   const initialState = {
+    form: {
+      valid: true,
+      processState: 'filling',
+      error: '',
+      field: { url: '' },
+    },
     links: [],
   };
 
   const state = onChange(initialState, render(elements, initialState));
-  const form = document.querySelector('form');
-  form.addEventListener('submit', (e) => {
+
+  const schema = yup.string()
+    .required()
+    .url()
+    .notOneOf(state.links, 'this link is already added');
+
+  // Контроллеры меняют модель, тем самым вызывая рендеринг.
+  // Контроллеры не должны менять DOM напрямую, минуя представление.
+
+  elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const url = formData.get('url');
-    const result = validate(url);
-    if (isEmpty(result)) {
-      state.links.push(url);
-    }
+    const value = formData.get('url').trim();
+    state.form.field.url = value;
+    schema
+      .validate(state.form.field.url)
+      .then(() => {
+        state.links.push(value);
+        state.form.error = '';
+        state.form.valid = true;
+      })
+      .catch((error) => {
+        state.form.error = error.message;
+        state.form.valid = false;
+      });
   });
 };
 
