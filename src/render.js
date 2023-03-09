@@ -2,7 +2,7 @@
 // В представлении происходит отображение модели на страницу
 // Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 
-const renderError = (elements, value, state) => {
+const renderError = (elements, value) => {
   const feedbackEl = elements.feedbackString;
   if (value === '') {
     feedbackEl.textContent = '';
@@ -11,20 +11,31 @@ const renderError = (elements, value, state) => {
   } else {
     feedbackEl.classList.add('text-danger');
     feedbackEl.classList.remove('text-success');
-    feedbackEl.textContent = state.form.error;
+    switch (value) {
+      case 'invalidUrl':
+        feedbackEl.textContent = 'Ссылка должна быть валидным URL';
+        break;
+      case 'dublUrl':
+        feedbackEl.textContent = 'RSS уже существует';
+        break;
+      case 'emptyInput':
+        feedbackEl.textContent = 'Заполните поле';
+        break;
+      default:
+        throw new Error('Unknown error ', value);
+    }
   }
 };
 const handleValidationState = (elements, value) => {
   if (value === true) {
     elements.urlInput.classList.remove('is-invalid');
-    elements.form.reset();
-    elements.urlInput.focus();
   } else {
     elements.urlInput.classList.add('is-invalid');
   }
 };
 
 export default (elements, initialState) => (path, value) => {
+  console.log(value, initialState);
   switch (path) {
     case 'form.valid':
       handleValidationState(elements, value);
@@ -33,7 +44,8 @@ export default (elements, initialState) => (path, value) => {
       renderError(elements, value, initialState);
       break;
     case 'links':
-      console.log(value);
+      elements.form.reset();
+      elements.urlInput.focus();
       break;
     case 'form.field.url':
       break;

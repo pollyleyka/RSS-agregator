@@ -25,10 +25,19 @@ const app = () => {
 
   const state = onChange(initialState, render(elements, initialState));
 
+  yup.setLocale({
+    mixed: {
+      required: 'emptyInput',
+      notOneOf: 'dublUrl',
+    },
+    string: {
+      url: 'invalidUrl',
+    },
+  });
   const schema = yup.string()
     .required()
     .url()
-    .notOneOf(state.links, 'this link is already added');
+    .notOneOf(initialState.links, 'this link is already added');
 
   // Контроллеры меняют модель, тем самым вызывая рендеринг.
   // Контроллеры не должны менять DOM напрямую, минуя представление.
