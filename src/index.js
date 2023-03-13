@@ -34,10 +34,13 @@ const app = () => {
       url: 'invalidUrl',
     },
   });
-  const schema = yup.string()
-    .required()
-    .url()
-    .notOneOf(initialState.links, 'this link is already added');
+  const validate = (string) => {
+    const schema = yup.string()
+      .required()
+      .url()
+      .notOneOf(initialState.links);
+    return schema.validate(string);
+  };
 
   // Контроллеры меняют модель, тем самым вызывая рендеринг.
   // Контроллеры не должны менять DOM напрямую, минуя представление.
@@ -47,8 +50,7 @@ const app = () => {
     const formData = new FormData(e.target);
     const value = formData.get('url').trim();
     state.form.field.url = value;
-    schema
-      .validate(state.form.field.url)
+    validate(state.form.field.url)
       .then(() => {
         state.links.push(value);
         state.form.error = '';
@@ -62,3 +64,9 @@ const app = () => {
 };
 
 app();
+
+//  Будет полезно сразу добавить в проект инструкцию по запуску и требования,
+// добавить скрипты в package.json (build и start для разработки)
+// babel нам не требуется - его можно сразу убрать.
+// У меня в дев сборке не подключились стили... но возможно, что я собрал
+// что-то не так. Поэтому, инструкция очень важна, чтобы это делать быстрее и без проб.

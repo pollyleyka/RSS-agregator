@@ -18,10 +18,7 @@
   },
   "homepage": "https://github.com/pollyleyka/frontend-project-11#readme",
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@babel/preset-env": "^7.20.2",
     "autoprefixer": "^10.4.13",
-    "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
     "eslint": "^8.35.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -36,6 +33,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
+    "i18next": "^22.4.11",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.6.2",
     "on-change": "^4.0.2",
