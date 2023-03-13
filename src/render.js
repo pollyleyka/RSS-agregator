@@ -2,10 +2,10 @@
 // В представлении происходит отображение модели на страницу
 // Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 
-const renderError = (elements, value) => {
+const renderError = (elements, value, i18nInstance) => {
   const feedbackEl = elements.feedbackString;
   if (value === '') {
-    feedbackEl.textContent = '';
+    feedbackEl.textContent = i18nInstance.success;
     feedbackEl.classList.remove('text-danger');
     feedbackEl.classList.add('text-success');
   } else {
@@ -13,13 +13,13 @@ const renderError = (elements, value) => {
     feedbackEl.classList.remove('text-success');
     switch (value) {
       case 'invalidUrl':
-        feedbackEl.textContent = 'Ссылка должна быть валидным URL';
+        feedbackEl.textContent = i18nInstance.errors.invalidUrl;
         break;
       case 'dublUrl':
-        feedbackEl.textContent = 'RSS уже существует';
+        feedbackEl.textContent = i18nInstance.errors.dublUrl;
         break;
       case 'emptyInput':
-        feedbackEl.textContent = 'Заполните поле';
+        feedbackEl.textContent = i18nInstance.errors.emptyInput;
         break;
       default:
         throw new Error('Unknown error ', value);
@@ -34,14 +34,13 @@ const handleValidationState = (elements, value) => {
   }
 };
 
-export default (elements, initialState) => (path, value) => {
-  console.log(value, initialState);
+export default (elements, initialState, i18nInstance) => (path, value) => {
   switch (path) {
     case 'form.valid':
       handleValidationState(elements, value);
       break;
     case 'form.error':
-      renderError(elements, value, initialState);
+      renderError(elements, value, i18nInstance);
       break;
     case 'links':
       elements.form.reset();
