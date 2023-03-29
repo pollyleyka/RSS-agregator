@@ -20,6 +20,8 @@ export default () => {
         urlInput: document.getElementById('url-input'),
         submitButton: document.querySelector('button[type="submit"]'),
         feedbackString: document.querySelector('.feedback'),
+        postsContainer: document.querySelector('.posts'),
+        feedsContainer: document.querySelector('.feeds'),
       };
       // Модель ничего не знает о контроллерах и о представлении. В ней не хранятся DOM-элементы.
       const initialState = {
@@ -30,8 +32,15 @@ export default () => {
           field: { url: '' },
         },
         links: [],
+        posts: [{
+          id: '',
+          link: '',
+          text: '',
+        }],
       };
+
       const state = onChange(initialState, render(elements, initialState, i18nInstance));
+
       yup.setLocale({
         mixed: {
           required: 'emptyInput',

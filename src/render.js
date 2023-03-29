@@ -5,7 +5,7 @@
 const renderError = (elements, value, i18nInstance) => {
   const feedbackEl = elements.feedbackString;
   if (value === '') {
-    feedbackEl.textContent = i18nInstance.success;
+    feedbackEl.textContent = i18nInstance.t('success');
     feedbackEl.classList.remove('text-danger');
     feedbackEl.classList.add('text-success');
   } else {
@@ -13,13 +13,13 @@ const renderError = (elements, value, i18nInstance) => {
     feedbackEl.classList.remove('text-success');
     switch (value) {
       case 'invalidUrl':
-        feedbackEl.textContent = i18nInstance.errors.invalidUrl;
+        feedbackEl.textContent = i18nInstance.t('inputErrors.invalidUrl');
         break;
       case 'dublUrl':
-        feedbackEl.textContent = i18nInstance.errors.dublUrl;
+        feedbackEl.textContent = i18nInstance.t('inputErrors.dublUrl');
         break;
       case 'emptyInput':
-        feedbackEl.textContent = i18nInstance.errors.emptyInput;
+        feedbackEl.textContent = i18nInstance.t('inputErrors.emptyInput');
         break;
       default:
         throw new Error('Unknown error ', value);
@@ -45,6 +45,7 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
     case 'links':
       elements.form.reset();
       elements.urlInput.focus();
+      // renderPostsFeeds(elements, state, i18nInstance);
       break;
     case 'form.field.url':
       break;
