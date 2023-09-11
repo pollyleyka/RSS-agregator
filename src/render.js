@@ -1,6 +1,5 @@
 // Представление не меняет модель.
 // В представлении происходит отображение модели на страницу
-// Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 
 const renderError = (elements, value, i18nInstance) => {
   const feedbackEl = elements.feedbackString;
@@ -34,6 +33,7 @@ const handleValidationState = (elements, value) => {
   }
 };
 
+// Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 export default (elements, initialState, i18nInstance) => (path, value) => {
   switch (path) {
     case 'form.valid':
