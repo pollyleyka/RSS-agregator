@@ -20,6 +20,7 @@ const renderError = (elements, value, i18nInstance) => {
 
 // Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 export default (elements, initialState, i18nInstance) => (path, value) => {
+  console.log('second check', initialState, path, value);
   switch (path) {
     case 'error':
       if (value === null) {
