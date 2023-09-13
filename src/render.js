@@ -26,14 +26,17 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
       if (value === null) {
         elements.feedback.textContent = i18nInstance.t('success');
         elements.feedback.classList.replace('text-danger', 'text-success');
+        elements.input.classList.remove('is-invalid');
       } else {
         elements.feedback.classList.replace('text-success', 'text-danger');
+        elements.input.classList.add('is-invalid');
         renderError(elements, value, i18nInstance);
       }
       break;
     case 'links':
       elements.form.reset();
       elements.input.focus();
+      elements.feedback.textContent = '';
       break;
     case 'field':
       break;
