@@ -2,52 +2,53 @@
 // В представлении происходит отображение модели на страницу
 
 const renderError = (elements, value, i18nInstance) => {
-  const feedbackEl = elements.feedbackString;
-  if (value === '') {
-    feedbackEl.textContent = i18nInstance.t('success');
-    feedbackEl.classList.remove('text-danger');
-    feedbackEl.classList.add('text-success');
-  } else {
-    feedbackEl.classList.add('text-danger');
-    feedbackEl.classList.remove('text-success');
-    switch (value) {
-      case 'invalidUrl':
-        feedbackEl.textContent = i18nInstance.t('inputErrors.invalidUrl');
-        break;
-      case 'dublUrl':
-        feedbackEl.textContent = i18nInstance.t('inputErrors.dublUrl');
-        break;
-      case 'emptyInput':
-        feedbackEl.textContent = i18nInstance.t('inputErrors.emptyInput');
-        break;
-      default:
-        throw new Error('Unknown error ', value);
-    }
-  }
-};
-const handleValidationState = (elements, value) => {
-  if (value === true) {
-    elements.urlInput.classList.remove('is-invalid');
-  } else {
-    elements.urlInput.classList.add('is-invalid');
+  const { feedback } = elements;
+  switch (value) {
+    case 'invalidUrl':
+      feedback.textContent = i18nInstance.t('errors.invalidUrl');
+      break;
+    case 'dublUrl':
+      feedback.textContent = i18nInstance.t('errors.dublUrl');
+      break;
+    case 'emptyInput':
+      feedback.textContent = i18nInstance.t('errors.emptyInput');
+      break;
+    default:
+      throw new Error('Unknown error ', value);
   }
 };
 
 // Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 export default (elements, initialState, i18nInstance) => (path, value) => {
   switch (path) {
-    case 'form.valid':
-      handleValidationState(elements, value);
-      break;
-    case 'form.error':
-      renderError(elements, value, i18nInstance);
+    case 'error':
+      if (value === null) {
+        elements.feedback.textContent = i18nInstance.t('success');
+        elements.feedback.classList.replace('text-danger', 'text-success');
+      } else {
+        elements.feedback.classList.replace('text-success', 'text-danger');
+        renderError(elements, value, i18nInstance);
+      }
       break;
     case 'links':
       elements.form.reset();
-      elements.urlInput.focus();
-      // renderPostsFeeds(elements, state, i18nInstance);
+      elements.input.focus();
       break;
-    case 'form.field.url':
+    case 'field':
+      break;
+    case 'status':
+      if (value === 'loading') {
+        elements.submit.disabled = true;
+      }
+      if (value === 'loaded') {
+        elements.feedback.textContent = i18nInstance.t('success');
+        elements.feedback.classList.replace('text-danger', 'text-success');
+        elements.submit.disabled = false;
+      }
+      if (value === 'failed') {
+        renderError(elements, initialState.error, i18nInstance);
+        elements.submit.disabled = false;
+      }
       break;
     default:
       throw new Error('Unknown state ', path);

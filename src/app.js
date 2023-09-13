@@ -9,35 +9,26 @@ import resources from './locales/index.js';
 export default () => {
   const lng = 'ru';
   const i18nInstance = i18next.createInstance();
-  i18nInstance
-    .init({
-      lng,
-      debug: false,
-      resources,
-    })
+  i18nInstance.init({
+    lng,
+    resources,
+  })
     .then(() => {
       const elements = {
         form: document.querySelector('form'),
-        urlInput: document.getElementById('url-input'),
-        submitButton: document.querySelector('button[type="submit"]'),
-        feedbackString: document.querySelector('.feedback'),
-        postsContainer: document.querySelector('.posts'),
-        feedsContainer: document.querySelector('.feeds'),
+        input: document.getElementById('url-input'),
+        submit: document.querySelector('button[type="submit"]'),
+        feedback: document.querySelector('.feedback'),
+        posts: document.querySelector('.posts'),
+        feeds: document.querySelector('.feeds'),
       };
-      // Модель ничего не знает о контроллерах и о представлении. В ней не хранятся DOM-элементы.
+
       const initialState = {
-        form: {
-          valid: true,
-          processState: 'filling',
-          error: '',
-          field: { url: '' },
-        },
+        status: 'filling', /* loading, loaded, failed */
+        error: null,
+        field: '',
         links: [],
-        posts: [{
-          // id: '',
-          // link: '',
-          // text: '',
-        }, {}],
+        posts: [],
       };
 
       const state = onChange(initialState, render(elements, initialState, i18nInstance));
@@ -55,34 +46,24 @@ export default () => {
         const schema = yup.string()
           .required()
           .url()
-          .notOneOf(initialState.links);
+          .notOneOf(state.links);
         return schema.validate(string);
       };
         // Контроллеры меняют модель, тем самым вызывая рендеринг.
         // Контроллеры не должны менять DOM напрямую, минуя представление.
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const value = formData.get('url').trim();
-        state.form.field.url = value;
-        validate(state.form.field.url)
+        const value = new FormData(e.target).get('url').trim();
+        state.field = value;
+        validate(state.field)
           .then(() => {
-            fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(`${state.form.field.url}`)}`)
-              .then((response) => {
-                const parsedData = parser(response.data.contents);
-                console.log(parsedData);
-                // state.links.push(value);
-                // state.form.error = '';
-                // state.form.valid = true;
-              })
-              .catch((error) => {
-                state.form.error = error.message;
-                state.form.valid = false;
-              });
+            state.links.push(value);
+            state.form.error = null;
+            state.status = 'filling';
           })
           .catch((error) => {
-            state.form.error = error.message;
-            state.form.valid = false;
+            state.error = error.message;
+            state.status = 'failed';
           });
       });
     });

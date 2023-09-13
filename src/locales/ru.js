@@ -1,6 +1,6 @@
 export default {
   translation: {
-    inputErrors: {
+    errors: {
       invalidUrl: 'Ссылка должна быть валидным URL',
       dublUrl: 'RSS уже существует',
       emptyInput: 'Заполните поле',
