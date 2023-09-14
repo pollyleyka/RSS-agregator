@@ -3,7 +3,6 @@
 
 const renderError = (elements, value, i18nInstance) => {
   const { feedback } = elements;
-  console.log('third check', value);
   switch (value) {
     case 'invalidUrl':
       feedback.textContent = i18nInstance.t('errors.invalidUrl');
@@ -21,7 +20,6 @@ const renderError = (elements, value, i18nInstance) => {
 
 // Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
 export default (elements, initialState, i18nInstance) => (path, value) => {
-  console.log('second check', initialState, path, value);
   switch (path) {
     case 'error':
       if (value === null) {

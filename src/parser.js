@@ -1,6 +1,8 @@
 export default (data) => {
   const parser = new DOMParser();
-  return parser.parseFromString(data, 'application/xml');
+  const newData = parser.parseFromString(data, 'application/xml');
+  console.log(newData);
+  return newData;
   // console.log(dom.header, dom.feed, dom.items);
   // return [dom.feed, dom.items];
   // И вот уже из этого объекта можно достать необходимые данные и вернуть их из парсинга:

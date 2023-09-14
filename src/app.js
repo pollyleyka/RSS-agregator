@@ -1,8 +1,10 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
 import i18next from 'i18next';
+import _ from 'lodash';
+import axios from 'axios';
 import render from './render.js';
-// import parser from './parser.js';
+import parser from './parser.js';
 
 import resources from './locales/index.js';
 
@@ -28,6 +30,7 @@ export default () => {
         field: '',
         links: [],
         posts: [],
+        feeds: [],
       };
       const state = onChange(initialState, render(elements, initialState, i18nInstance));
       yup.setLocale({
@@ -40,7 +43,6 @@ export default () => {
         },
       });
       const validate = (string) => {
-        console.log('first check', string);
         const schema = yup.string()
           .required()
           .url()
@@ -55,8 +57,31 @@ export default () => {
         validate(state.field)
           .then(() => {
             state.links.push(value);
-            state.error = null;
-            state.status = 'loaded';
+            // state.error = null;
+            // state.status = 'loaded';
+            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
+            axios.get(urlWithProxy)
+              .then((responce) => {
+                const [feed, posts] = parser(responce.data.contents);
+                feed.id = _.uniqueId();
+                feed.link = state.field;
+                state.feeds.push(feed);
+                posts.forEach((post) => {
+                  post.id = _.uniqueId();
+                  post.feedId = feed.id;
+                });
+                state.posts = [...posts, ...state.posts];
+                state.status = 'loaded';
+                state.error = null;
+              })
+              .catch((err) => {
+                if (err.isAxiosError) {
+                  state.error = 'networkError';
+                } else {
+                  state.error = 'unknowError';
+                }
+                state.status = 'failed';
+              });
           })
           .catch((error) => {
             state.error = error.message;
