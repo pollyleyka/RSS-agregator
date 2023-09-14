@@ -37,7 +37,7 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
     case 'links':
       elements.form.reset();
       elements.input.focus();
-      elements.feedback.textContent = '';
+      //elements.feedback.textContent = '';
       break;
     case 'field':
       break;
