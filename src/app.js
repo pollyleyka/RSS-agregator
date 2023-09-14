@@ -76,6 +76,8 @@ export default () => {
               })
               .catch((err) => {
                 console.log(err);
+                console.log(err.state);
+                console.log(state);
                 if (err.isAxiosError) {
                   state.error = 'networkError';
                 } else {

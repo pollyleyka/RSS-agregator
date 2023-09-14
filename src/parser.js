@@ -14,6 +14,5 @@ export default (data) => {
     description: item.querySelector('description').textContent,
     link: item.querySelector('link').textContent,
   }));
-  console.log('parcer', feed, posts);
   return [feed, posts];
 };
