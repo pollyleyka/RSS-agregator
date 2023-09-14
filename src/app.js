@@ -57,7 +57,8 @@ export default () => {
         validate(state.field)
           .then(() => {
             state.links.push(value);
-            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
+            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${state.field}`;
+            console.log('proxy', urlWithProxy);
             axios.get(urlWithProxy)
               .then((responce) => {
                 console.log('zero', responce.data.contents);

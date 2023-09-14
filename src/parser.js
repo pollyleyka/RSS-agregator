@@ -9,8 +9,8 @@ export default (data) => {
     description: feedDescription,
   };
   const items = newData.querySelectorAll('item');
-  const posts = Array.from(items);
-  posts.map((item) => ({
+  const list = Array.from(items);
+  const posts = list.map((item) => ({
     title: item.querySelector('title').textContent,
     description: item.querySelector('description').textContent,
     link: item.querySelector('link').textContent,
