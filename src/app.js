@@ -55,7 +55,7 @@ export default () => {
         validate(state.field)
           .then(() => {
             state.links.push(value);
-            state.form.error = null;
+            state.error = null;
             state.status = 'filling';
           })
           .catch((error) => {

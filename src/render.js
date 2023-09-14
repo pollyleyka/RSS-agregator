@@ -3,6 +3,7 @@
 
 const renderError = (elements, value, i18nInstance) => {
   const { feedback } = elements;
+  console.log('third check', value);
   switch (value) {
     case 'invalidUrl':
       feedback.textContent = i18nInstance.t('errors.invalidUrl');
