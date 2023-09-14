@@ -57,12 +57,12 @@ export default () => {
         validate(state.field)
           .then(() => {
             state.links.push(value);
-            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${state.field}`;
+            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
             console.log('proxy', urlWithProxy);
             axios.get(urlWithProxy)
               .then((responce) => {
-                console.log('zero', responce.data.contents);
                 const [feed, posts] = parser(responce.data.contents);
+                console.log('afterParcer', feed, posts);
                 feed.id = _.uniqueId();
                 feed.link = state.field;
                 state.feeds.push(feed);
@@ -75,6 +75,7 @@ export default () => {
                 state.error = null;
               })
               .catch((err) => {
+                console.log(err);
                 if (err.isAxiosError) {
                   state.error = 'networkError';
                 } else {

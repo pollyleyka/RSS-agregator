@@ -1,7 +1,6 @@
 export default (data) => {
   const parser = new DOMParser();
   const newData = parser.parseFromString(data, 'application/xml');
-  console.log('first', newData);
   const feedTitle = newData.querySelector('channel title').textContent;
   const feedDescription = newData.querySelector('channel description').textContent;
   const feed = {
@@ -15,6 +14,6 @@ export default (data) => {
     description: item.querySelector('description').textContent,
     link: item.querySelector('link').textContent,
   }));
-  console.log('second', feed, posts);
+  console.log('parcer', feed, posts);
   return [feed, posts];
 };
