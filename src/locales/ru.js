@@ -5,6 +5,8 @@ export default {
       dublUrl: 'RSS уже существует',
       emptyInput: 'Заполните поле',
       notRSS: 'Ресурс не содержит валидный RSS',
+      unknowError: 'Неизвестная ошибка',
+      networkError: 'Ошибка сети',
     },
     success: 'RSS успешно загружен',
     posts: {

@@ -57,11 +57,10 @@ export default () => {
         validate(state.field)
           .then(() => {
             state.links.push(value);
-            // state.error = null;
-            // state.status = 'loaded';
             const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
             axios.get(urlWithProxy)
               .then((responce) => {
+                console.log('zero', responce.data.contents);
                 const [feed, posts] = parser(responce.data.contents);
                 feed.id = _.uniqueId();
                 feed.link = state.field;
@@ -83,8 +82,8 @@ export default () => {
                 state.status = 'failed';
               });
           })
-          .catch((error) => {
-            state.error = error.message;
+          .catch((err) => {
+            state.error = err.message;
             state.status = 'failed';
           });
       });
