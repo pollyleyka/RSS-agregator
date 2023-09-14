@@ -35,17 +35,19 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
       }
       break;
     case 'links':
-      elements.form.reset();
-      elements.input.focus();
-      //elements.feedback.textContent = '';
+      // elements.form.reset();
+      // elements.input.focus();
+      // elements.feedback.textContent = '';
       break;
     case 'field':
       break;
-    case 'status':
+    case 'status': /* filling, loading, loaded, failed */
       if (value === 'loading') {
         elements.submit.disabled = true;
       }
       if (value === 'loaded') {
+        elements.form.reset();
+        elements.input.focus();
         elements.feedback.textContent = i18nInstance.t('success');
         elements.feedback.classList.replace('text-danger', 'text-success');
         elements.submit.disabled = false;

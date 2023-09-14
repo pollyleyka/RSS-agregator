@@ -23,7 +23,7 @@ export default () => {
         feeds: document.querySelector('.feeds'),
       };
       const initialState = {
-        status: 'filling', /* loading, loaded, failed */
+        status: 'filling', /* filling, loading, loaded, failed */
         error: null,
         field: '',
         links: [],
@@ -56,7 +56,7 @@ export default () => {
           .then(() => {
             state.links.push(value);
             state.error = null;
-            state.status = 'filling';
+            state.status = 'loaded';
           })
           .catch((error) => {
             state.error = error.message;
