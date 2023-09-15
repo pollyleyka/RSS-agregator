@@ -9,9 +9,8 @@ export default {
       networkError: 'Ошибка сети',
     },
     success: 'RSS успешно загружен',
-    posts: {
-      postsHeader: 'Посты',
-      openBtn: 'Просмотр',
-    },
+    posts: 'Посты',
+    openBtn: 'Просмотр',
+    feeds: 'Фиды',
   },
 };

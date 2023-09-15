@@ -21,8 +21,8 @@ export default () => {
         input: document.getElementById('url-input'),
         submit: document.querySelector('button[type="submit"]'),
         feedback: document.querySelector('.feedback'),
-        posts: document.querySelector('.posts'),
         feeds: document.querySelector('.feeds'),
+        posts: document.querySelector('.posts'),
       };
       const initialState = {
         status: 'filling', /* filling, loading, loaded, failed */
@@ -56,13 +56,10 @@ export default () => {
         state.field = value;
         validate(state.field)
           .then(() => {
-            state.links.push(value);
             const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
-            console.log('proxy', urlWithProxy);
             axios.get(urlWithProxy)
               .then((responce) => {
                 const [feed, posts] = parser(responce.data.contents);
-                console.log('afterParcer', feed, posts);
                 feed.id = _.uniqueId();
                 feed.link = state.field;
                 state.feeds.push(feed);
@@ -73,6 +70,7 @@ export default () => {
                 state.posts = [...posts, ...state.posts];
                 state.status = 'loaded';
                 state.error = null;
+                state.links.push(state.field);
               })
               .catch((err) => {
                 console.log(err);
