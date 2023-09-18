@@ -8,6 +8,22 @@ import parser from './parser.js';
 
 import resources from './locales/index.js';
 
+const updateRSS = (state) => {
+  const timeout = 5000;
+  const requests = state.feeds.map((feed) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${feed.link}`)}`)
+    .then((response) => {
+      const [, posts] = parser(response.data.contents);
+      const postsFromState = state.posts.filter((post) => post.feedId === feed.id);
+      const newPosts = _.differenceBy(posts, postsFromState, 'link');
+      state.posts = [...newPosts, ...state.posts];
+    })
+    .catch((err) => console.log(err)));
+  Promise.all(requests)
+    .then(() => {
+      setTimeout(updateRSS, timeout, state);
+    });
+};
+
 export default () => {
   const lng = 'ru';
   const i18nInstance = i18next.createInstance();
@@ -101,5 +117,6 @@ export default () => {
           state.shownPostId = id;
         }
       });
+      updateRSS(state);
     });
 };
