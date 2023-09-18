@@ -38,6 +38,7 @@ const containerRender = (containerName, container, i18nInstance) => {
   container.innerHTML = '';
   container.append(card);
 };
+
 const renderFeeds = (feeds, i18nInstance, elements) => {
   containerRender('feeds', elements.feeds, i18nInstance);
 
@@ -58,7 +59,8 @@ const renderFeeds = (feeds, i18nInstance, elements) => {
   });
 };
 
-const renderPosts = (posts, i18nInstance, elements) => {
+const renderPosts = (posts, shownPostsIds, i18nInstance, elements) => {
+  console.log(posts, shownPostsIds);
   containerRender('posts', elements.posts, i18nInstance);
 
   const postsList = elements.posts.querySelector('.card ul');
@@ -69,6 +71,10 @@ const renderPosts = (posts, i18nInstance, elements) => {
 
     const a = document.createElement('a');
     a.classList.add('fw-bold');
+    if (shownPostsIds.includes(post.id)) {
+      a.classList.replace('fw-bold', 'fw-normal');
+      a.classList.add('link-secondary');
+    }
     const linkAttributes = [['href', post.link], ['data-id', post.id], ['target', '_blank'], ['rel', 'noopener norefferer']];
     setAttributes(a, linkAttributes);
     a.textContent = post.title;
@@ -122,10 +128,12 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
       renderFeeds(initialState.feeds, i18nInstance, elements);
       break;
     case 'posts':
-      renderPosts(initialState.posts, i18nInstance, elements);
+      renderPosts(initialState.posts, initialState.shownPostsIds, i18nInstance, elements);
       break;
     case 'shownPostId':
       renderModalWindow(initialState.shownPostId, initialState.posts, elements);
+      break;
+    case 'shownPostsIds':
       break;
     default:
       throw new Error('Unknown state ', path);

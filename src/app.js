@@ -52,6 +52,7 @@ export default () => {
         posts: [],
         feeds: [],
         shownPostId: null,
+        shownPostsIds: [],
       };
       const state = onChange(initialState, render(elements, initialState, i18nInstance));
       yup.setLocale({
@@ -115,6 +116,7 @@ export default () => {
         const { dataset: { id } } = target;
         if (id) {
           state.shownPostId = id;
+          state.shownPostsIds.push(id);
         }
       });
       updateRSS(state);
