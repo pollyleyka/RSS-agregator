@@ -23,6 +23,10 @@ export default () => {
         feedback: document.querySelector('.feedback'),
         feeds: document.querySelector('.feeds'),
         posts: document.querySelector('.posts'),
+        modal: document.querySelector('.modal'),
+        modalTitle: document.querySelector('.modal-title'),
+        modalDescription: document.querySelector('.modal-body'),
+        modalFullArticle: document.querySelector('.full-article'),
       };
       const initialState = {
         status: 'filling', /* filling, loading, loaded, failed */
@@ -31,6 +35,7 @@ export default () => {
         links: [],
         posts: [],
         feeds: [],
+        shownPostId: null,
       };
       const state = onChange(initialState, render(elements, initialState, i18nInstance));
       yup.setLocale({
@@ -73,11 +78,10 @@ export default () => {
                 state.links.push(state.field);
               })
               .catch((err) => {
-                console.log(err);
-                console.log(err.state);
-                console.log(state);
                 if (err.isAxiosError) {
                   state.error = 'networkError';
+                } else if (err.isParserError) {
+                  state.error = 'parserError';
                 } else {
                   state.error = 'unknowError';
                 }
@@ -85,9 +89,17 @@ export default () => {
               });
           })
           .catch((err) => {
+            console.log(err);
             state.error = err.message;
             state.status = 'failed';
           });
+      });
+      elements.posts.addEventListener('click', (e) => {
+        const { target } = e;
+        const { dataset: { id } } = target;
+        if (id) {
+          state.shownPostId = id;
+        }
       });
     });
 };

@@ -1,5 +1,23 @@
 // Представление не меняет модель.
 // В представлении происходит отображение модели на страницу
+const setAttributes = (element, attributes) => {
+  attributes.forEach((attr) => {
+    const [name, value] = attr;
+    element.setAttribute(name, value);
+  });
+};
+const renderModalWindow = (id, posts, elements) => {
+  const a = document.querySelector(`[data-id="${id}"]`);
+  a.classList.replace('fw-bold', 'fw-normal');
+  a.classList.add('link-secondary');
+
+  const selectedPost = posts.find((post) => post.id === id);
+
+  elements.modalTitle.textContent = selectedPost.title;
+  elements.modalDescription.textContent = selectedPost.description;
+  elements.modalFullArticle.setAttribute('href', selectedPost.link);
+};
+
 const containerRender = (containerName, container, i18nInstance) => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
@@ -37,12 +55,6 @@ const renderFeeds = (feeds, i18nInstance, elements) => {
 
     li.append(feedHeader, feedDescription);
     feedsList.prepend(li);
-  });
-};
-const setAttributes = (element, attributes) => {
-  attributes.forEach((attr) => {
-    const [name, value] = attr;
-    element.setAttribute(name, value);
   });
 };
 
@@ -111,6 +123,9 @@ export default (elements, initialState, i18nInstance) => (path, value) => {
       break;
     case 'posts':
       renderPosts(initialState.posts, i18nInstance, elements);
+      break;
+    case 'shownPostId':
+      renderModalWindow(initialState.shownPostId, initialState.posts, elements);
       break;
     default:
       throw new Error('Unknown state ', path);
