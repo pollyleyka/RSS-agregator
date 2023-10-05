@@ -1,16 +1,24 @@
-import * as yup from 'yup';
-import onChange from 'on-change';
 import i18next from 'i18next';
 import _ from 'lodash';
 import axios from 'axios';
-import render from './render.js';
+import getState from './render.js';
 import parser from './parser.js';
 
 import resources from './locales/index.js';
+import errorLocales from './locales/errorLocales.js';
+
+const timeout = 10000;
+const lng = 'ru';
+
+const addProxy = (url) => {
+  const urlWithProxy = new URL('/get', 'https://allorigins.hexlet.app');
+  urlWithProxy.searchParams.set('url', url);
+  urlWithProxy.searchParams.set('disableCache', 'true');
+  return urlWithProxy.toString();
+};
 
 const updateRSS = (state) => {
-  const timeout = 5000;
-  const requests = state.feeds.map((feed) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${feed.link}`)}`)
+  const requests = state.feeds.map((feed) => axios.get(addProxy(feed.link))
     .then((response) => {
       const [, posts] = parser(response.data.contents);
       const postsFromState = state.posts.filter((post) => post.feedId === feed.id);
@@ -23,11 +31,35 @@ const updateRSS = (state) => {
       setTimeout(updateRSS, timeout, state);
     });
 };
-
+const loadRSS = (url, state) => {
+  axios.get(addProxy(url))
+    .then((responce) => {
+      const [feed, posts] = parser(responce.data.contents);
+      feed.id = _.uniqueId();
+      feed.link = url;
+      state.feeds.push(feed);
+      posts.forEach((post) => {
+        post.id = _.uniqueId();
+        post.feedId = feed.id;
+      });
+      state.posts = [...posts, ...state.posts];
+      state.status = 'loaded';
+      state.error = null;
+    })
+    .catch((err) => {
+      if (err.isAxiosError) {
+        state.error = 'networkError';
+      } else if (err.isParserError) {
+        state.error = 'parserError';
+      } else {
+        state.error = 'unknowError';
+      }
+      state.status = 'failed';
+    });
+};
 export default () => {
-  const lng = 'ru';
-  const i18nInstance = i18next.createInstance();
-  i18nInstance.init({
+  const i18n = i18next.createInstance();
+  i18n.init({
     lng,
     resources,
   })
@@ -45,70 +77,39 @@ export default () => {
         modalFullArticle: document.querySelector('.full-article'),
       };
       const initialState = {
-        status: 'filling', /* filling, loading, loaded, failed */
+        status: 'filling',
         error: null,
-        field: '',
-        links: [],
         posts: [],
         feeds: [],
         shownPostId: null,
-        shownPostsIds: [],
+        shownPostsIds: new Set(),
       };
-      const state = onChange(initialState, render(elements, initialState, i18nInstance));
-      yup.setLocale({
-        mixed: {
-          required: 'emptyInput',
-          notOneOf: 'dublUrl',
-        },
-        string: {
-          url: 'invalidUrl',
-        },
-      });
-      const validate = (string) => {
+      const state = getState(initialState, i18n, elements);
+      const yup = errorLocales;
+      const validate = (url, links) => {
         const schema = yup.string()
           .required()
           .url()
-          .notOneOf(state.links);
-        return schema.validate(string);
+          .notOneOf(links);
+        return schema
+          .validate(url)
+          .then(() => null)
+          .catch((error) => error.message);
       };
-        // Контроллеры меняют модель, тем самым вызывая рендеринг.
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const value = new FormData(e.target).get('url').trim();
-        state.field = value;
-        validate(state.field)
-          .then(() => {
-            const urlWithProxy = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(`${state.field}`)}`;
-            axios.get(urlWithProxy)
-              .then((responce) => {
-                const [feed, posts] = parser(responce.data.contents);
-                feed.id = _.uniqueId();
-                feed.link = state.field;
-                state.feeds.push(feed);
-                posts.forEach((post) => {
-                  post.id = _.uniqueId();
-                  post.feedId = feed.id;
-                });
-                state.posts = [...posts, ...state.posts];
-                state.status = 'loaded';
-                state.error = null;
-                state.links.push(state.field);
-              })
-              .catch((err) => {
-                if (err.isAxiosError) {
-                  state.error = 'networkError';
-                } else if (err.isParserError) {
-                  state.error = 'parserError';
-                } else {
-                  state.error = 'unknowError';
-                }
-                state.status = 'failed';
-              });
-          })
-          .catch((err) => {
-            console.log(err);
-            state.error = err.message;
-            state.status = 'failed';
+        const url = new FormData(e.target).get('url').trim();
+        const links = state.feeds.map(({ link }) => link);
+        state.status = 'loading';
+        validate(url, links)
+          .then((error) => {
+            if (error) {
+              state.error = error;
+              state.status = 'failed';
+              return;
+            }
+            state.error = null;
+            loadRSS(url, state);
           });
       });
       elements.posts.addEventListener('click', (e) => {
@@ -116,7 +117,7 @@ export default () => {
         const { dataset: { id } } = target;
         if (id) {
           state.shownPostId = id;
-          state.shownPostsIds.push(id);
+          state.shownPostsIds.add(id);
         }
       });
       updateRSS(state);

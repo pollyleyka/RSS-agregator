@@ -2,3 +2,6 @@
 *.log
 dist
 assets
+
+.DS_Store
+src/.DS_Store

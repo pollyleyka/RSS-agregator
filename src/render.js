@@ -1,5 +1,5 @@
-// Представление не меняет модель.
-// В представлении происходит отображение модели на страницу
+import onChange from 'on-change';
+
 const setAttributes = (element, attributes) => {
   attributes.forEach((attr) => {
     const [name, value] = attr;
@@ -18,7 +18,7 @@ const renderModalWindow = (id, posts, elements) => {
   elements.modalFullArticle.setAttribute('href', selectedPost.link);
 };
 
-const containerRender = (containerName, container, i18nInstance) => {
+const containerRender = (containerName, container, i18n) => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
   card.innerHTML = '';
@@ -27,7 +27,7 @@ const containerRender = (containerName, container, i18nInstance) => {
   cardBody.classList.add('card-body');
   const cardHeader = document.createElement('h2');
   cardHeader.classList.add('card-title', 'h4');
-  cardHeader.textContent = i18nInstance.t(`${containerName}`);
+  cardHeader.textContent = i18n.t(`${containerName}`);
   cardBody.append(cardHeader);
 
   const list = document.createElement('ul');
@@ -39,8 +39,8 @@ const containerRender = (containerName, container, i18nInstance) => {
   container.append(card);
 };
 
-const renderFeeds = (feeds, i18nInstance, elements) => {
-  containerRender('feeds', elements.feeds, i18nInstance);
+const renderFeeds = (feeds, i18n, elements) => {
+  containerRender('feeds', elements.feeds, i18n);
 
   const feedsList = elements.feeds.querySelector('.card ul');
 
@@ -59,9 +59,8 @@ const renderFeeds = (feeds, i18nInstance, elements) => {
   });
 };
 
-const renderPosts = (posts, shownPostsIds, i18nInstance, elements) => {
-  console.log(posts, shownPostsIds);
-  containerRender('posts', elements.posts, i18nInstance);
+const renderPosts = (posts, shownPostsIds, i18n, elements) => {
+  containerRender('posts', elements.posts, i18n);
 
   const postsList = elements.posts.querySelector('.card ul');
 
@@ -71,7 +70,7 @@ const renderPosts = (posts, shownPostsIds, i18nInstance, elements) => {
 
     const a = document.createElement('a');
     a.classList.add('fw-bold');
-    if (shownPostsIds.includes(post.id)) {
+    if (shownPostsIds.had(post.id)) {
       a.classList.replace('fw-bold', 'fw-normal');
       a.classList.add('link-secondary');
     }
@@ -83,59 +82,60 @@ const renderPosts = (posts, shownPostsIds, i18nInstance, elements) => {
     const buttonAttributes = [['type', 'button'], ['data-id', post.id], ['data-bs-toggle', 'modal'], ['data-bs-target', '#modal']];
     setAttributes(button, buttonAttributes);
     button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-    button.textContent = i18nInstance.t('openBtn');
+    button.textContent = i18n.t('openBtn');
 
     li.append(a, button);
     postsList.append(li);
   });
 };
-
-// Функция возвращает функцию. Подробнее: https://ru.hexlet.io/qna/javascript/questions/chto-oznachaet-funktsiya-vida-const-render-a-b
-export default (elements, initialState, i18nInstance) => (path, value) => {
-  switch (path) {
-    case 'error':
-      if (value === null) {
-        elements.feedback.textContent = i18nInstance.t('success'); /* кажется нужно убрать */
-        elements.feedback.classList.replace('text-danger', 'text-success');
-        elements.input.classList.remove('is-invalid');
-      } else {
-        elements.feedback.classList.replace('text-success', 'text-danger');
-        elements.input.classList.add('is-invalid');
-        elements.feedback.textContent = i18nInstance.t(`errors.${value}`);
-      }
-      break;
-    case 'status': /* filling, loading, loaded, failed */
-      if (value === 'loading') {
-        elements.submit.disabled = true;
-      }
-      if (value === 'loaded') {
-        elements.form.reset();
-        elements.input.focus();
-        elements.feedback.textContent = i18nInstance.t('success');
-        elements.feedback.classList.replace('text-danger', 'text-success');
-        elements.submit.disabled = false;
-      }
-      if (value === 'failed') {
-        elements.feedback.textContent = i18nInstance.t(`errors.${initialState.error}`);
-        elements.submit.disabled = false;
-      }
-      break;
-    case 'links':
-      break;
-    case 'field':
-      break;
-    case 'feeds':
-      renderFeeds(initialState.feeds, i18nInstance, elements);
-      break;
-    case 'posts':
-      renderPosts(initialState.posts, initialState.shownPostsIds, i18nInstance, elements);
-      break;
-    case 'shownPostId':
-      renderModalWindow(initialState.shownPostId, initialState.posts, elements);
-      break;
-    case 'shownPostsIds':
-      break;
-    default:
-      throw new Error('Unknown state ', path);
+const renderFeedback = (value, elements, i18n) => {
+  if (value === null) {
+    elements.feedback.textContent = i18n.t('success');
+    elements.feedback.classList.replace('text-danger', 'text-success');
+    elements.input.classList.remove('is-invalid');
+  } else {
+    elements.feedback.textContent = i18n.t(`errors.${value}`);
+    elements.feedback.classList.replace('text-success', 'text-danger');
+    elements.input.classList.add('is-invalid');
   }
+};
+const renderStatus = (value, elements, i18n, state) => {
+  if (value === 'loading') {
+    elements.submit.disabled = true;
+  }
+  if (value === 'loaded') {
+    elements.form.reset();
+    elements.input.focus();
+    elements.submit.disabled = false;
+  }
+  if (value === 'failed') {
+    elements.feedback.textContent = i18n.t(`errors.${state.error}`);
+    elements.submit.disabled = false;
+  }
+};
+export default (elements, initialState, i18n) => {
+  const state = onChange(initialState, (path, value) => {
+    switch (path) {
+      case 'error':
+        renderFeedback(value, elements, i18n);
+        break;
+      case 'status':
+        renderStatus(value, elements, i18n, state);
+        break;
+      case 'feeds':
+        renderFeeds(state.feeds, i18n, elements);
+        break;
+      case 'posts':
+        renderPosts(state.posts, state.shownPostsIds, i18n, elements);
+        break;
+      case 'shownPostId':
+        renderModalWindow(state.shownPostId, state.posts, elements);
+        break;
+      case 'shownPostsIds':
+        break;
+      default:
+        throw new Error('Unknown state ', path);
+    }
+  });
+  return state;
 };
