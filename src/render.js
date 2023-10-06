@@ -70,7 +70,7 @@ const renderPosts = (posts, shownPostsIds, i18n, elements) => {
 
     const a = document.createElement('a');
     a.classList.add('fw-bold');
-    if (shownPostsIds.had(post.id)) {
+    if (shownPostsIds.has(post.id)) {
       a.classList.replace('fw-bold', 'fw-normal');
       a.classList.add('link-secondary');
     }
@@ -107,13 +107,15 @@ const renderStatus = (value, elements, i18n, state) => {
     elements.form.reset();
     elements.input.focus();
     elements.submit.disabled = false;
+    renderFeedback(null, elements, i18n);
   }
   if (value === 'failed') {
-    elements.feedback.textContent = i18n.t(`errors.${state.error}`);
+    renderFeedback(state.error, elements, i18n);
     elements.submit.disabled = false;
   }
 };
-export default (elements, initialState, i18n) => {
+
+export default (initialState, i18n, elements) => {
   const state = onChange(initialState, (path, value) => {
     switch (path) {
       case 'error':

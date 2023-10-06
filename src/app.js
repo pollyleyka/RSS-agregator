@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 import i18next from 'i18next';
 import _ from 'lodash';
 import axios from 'axios';
@@ -5,7 +7,6 @@ import getState from './render.js';
 import parser from './parser.js';
 
 import resources from './locales/index.js';
-import errorLocales from './locales/errorLocales.js';
 
 const timeout = 10000;
 const lng = 'ru';
@@ -85,7 +86,15 @@ export default () => {
         shownPostsIds: new Set(),
       };
       const state = getState(initialState, i18n, elements);
-      const yup = errorLocales;
+      yup.setLocale({
+        mixed: {
+          required: 'emptyInput',
+          notOneOf: 'dublUrl',
+        },
+        string: {
+          url: 'invalidUrl',
+        },
+      });
       const validate = (url, links) => {
         const schema = yup.string()
           .required()
@@ -93,14 +102,13 @@ export default () => {
           .notOneOf(links);
         return schema
           .validate(url)
-          .then(() => null)
+          .then(() => {})
           .catch((error) => error.message);
       };
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
         const url = new FormData(e.target).get('url').trim();
         const links = state.feeds.map(({ link }) => link);
-        state.status = 'loading';
         validate(url, links)
           .then((error) => {
             if (error) {
@@ -108,7 +116,6 @@ export default () => {
               state.status = 'failed';
               return;
             }
-            state.error = null;
             loadRSS(url, state);
           });
       });
