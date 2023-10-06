@@ -7,6 +7,7 @@ import getState from './render.js';
 import parser from './parser.js';
 
 import resources from './locales/index.js';
+import locale from './locales/locale.js';
 
 const timeout = 10000;
 const lng = 'ru';
@@ -86,15 +87,7 @@ export default () => {
         shownPostsIds: new Set(),
       };
       const state = getState(initialState, i18n, elements);
-      yup.setLocale({
-        mixed: {
-          required: 'emptyInput',
-          notOneOf: 'dublUrl',
-        },
-        string: {
-          url: 'invalidUrl',
-        },
-      });
+      yup.setLocale(locale);
       const validate = (url, links) => {
         const schema = yup.string()
           .required()
