@@ -18,7 +18,7 @@ const renderModalWindow = (id, posts, elements) => {
   elements.modalFullArticle.setAttribute('href', selectedPost.link);
 };
 
-const containerRender = (containerName, container, i18n) => {
+const renderContainer = (containerName, i18n) => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
   card.innerHTML = '';
@@ -35,14 +35,16 @@ const containerRender = (containerName, container, i18n) => {
 
   card.append(cardBody, list);
 
-  container.innerHTML = '';
-  container.append(card);
+  // container.innerHTML = '';
+  // container.append(card);
+  return [card, list];
 };
 
 const renderFeeds = (feeds, i18n, elements) => {
-  containerRender('feeds', elements.feeds, i18n);
+  // renderContainer('feeds', elements.feeds, i18n);
+  const [card, list] = renderContainer('feeds', i18n);
 
-  const feedsList = elements.feeds.querySelector('.card ul');
+  // const list = elements.feeds.querySelector('.card ul');
 
   feeds.forEach((feed) => {
     const li = document.createElement('li');
@@ -55,14 +57,17 @@ const renderFeeds = (feeds, i18n, elements) => {
     feedDescription.textContent = feed.description;
 
     li.append(feedHeader, feedDescription);
-    feedsList.prepend(li);
+    list.prepend(li);
   });
+  elements.feeds.innerHTML = '';
+  elements.feeds.append(card);
 };
 
 const renderPosts = (posts, shownPostsIds, i18n, elements) => {
-  containerRender('posts', elements.posts, i18n);
+  // renderContainer('posts', elements.posts, i18n);
+  const [card, list] = renderContainer('posts', i18n);
 
-  const postsList = elements.posts.querySelector('.card ul');
+  // const postsList = elements.posts.querySelector('.card ul');
 
   posts.forEach((post) => {
     const li = document.createElement('li');
@@ -85,11 +90,16 @@ const renderPosts = (posts, shownPostsIds, i18n, elements) => {
     button.textContent = i18n.t('openBtn');
 
     li.append(a, button);
-    postsList.append(li);
+    list.append(li);
   });
+  elements.posts.innerHTML = '';
+  elements.posts.append(card);
 };
 const renderFeedback = (value, elements, i18n) => {
   if (value === null) {
+    elements.feedback.textContent = '';
+    elements.input.classList.remove('is-invalid');
+  } else if (value === 'success') {
     elements.feedback.textContent = i18n.t('success');
     elements.feedback.classList.replace('text-danger', 'text-success');
     elements.input.classList.remove('is-invalid');

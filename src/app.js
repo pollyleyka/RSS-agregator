@@ -33,6 +33,15 @@ const updateRSS = (state) => {
       setTimeout(updateRSS, timeout, state);
     });
 };
+const defineError = (err) => {
+  if (err.isAxiosError) {
+    return 'networkError';
+  }
+  if (err.isParserError) {
+    return 'parserError';
+  }
+  return 'unknowError';
+};
 const loadRSS = (url, state) => {
   axios.get(addProxy(url))
     .then((responce) => {
@@ -46,16 +55,10 @@ const loadRSS = (url, state) => {
       });
       state.posts = [...posts, ...state.posts];
       state.status = 'loaded';
-      state.error = null;
+      state.error = 'success';
     })
     .catch((err) => {
-      if (err.isAxiosError) {
-        state.error = 'networkError';
-      } else if (err.isParserError) {
-        state.error = 'parserError';
-      } else {
-        state.error = 'unknowError';
-      }
+      state.error = defineError(err);
       state.status = 'failed';
     });
 };
@@ -109,6 +112,7 @@ export default () => {
               state.status = 'failed';
               return;
             }
+            state.error = null;
             loadRSS(url, state);
           });
       });
