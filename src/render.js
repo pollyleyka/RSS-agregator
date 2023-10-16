@@ -35,16 +35,11 @@ const renderContainer = (containerName, i18n) => {
 
   card.append(cardBody, list);
 
-  // container.innerHTML = '';
-  // container.append(card);
   return [card, list];
 };
 
 const renderFeeds = (feeds, i18n, elements) => {
-  // renderContainer('feeds', elements.feeds, i18n);
   const [card, list] = renderContainer('feeds', i18n);
-
-  // const list = elements.feeds.querySelector('.card ul');
 
   feeds.forEach((feed) => {
     const li = document.createElement('li');
@@ -64,10 +59,7 @@ const renderFeeds = (feeds, i18n, elements) => {
 };
 
 const renderPosts = (posts, shownPostsIds, i18n, elements) => {
-  // renderContainer('posts', elements.posts, i18n);
   const [card, list] = renderContainer('posts', i18n);
-
-  // const postsList = elements.posts.querySelector('.card ul');
 
   posts.forEach((post) => {
     const li = document.createElement('li');
@@ -112,12 +104,13 @@ const renderFeedback = (value, elements, i18n) => {
 const renderStatus = (value, elements, i18n, state) => {
   if (value === 'loading') {
     elements.submit.disabled = true;
+    renderFeedback(null, elements, i18n);
   }
   if (value === 'loaded') {
     elements.form.reset();
     elements.input.focus();
     elements.submit.disabled = false;
-    renderFeedback(null, elements, i18n);
+    renderFeedback('success', elements, i18n);
   }
   if (value === 'failed') {
     renderFeedback(state.error, elements, i18n);

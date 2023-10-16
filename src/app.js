@@ -55,7 +55,7 @@ const loadRSS = (url, state) => {
       });
       state.posts = [...posts, ...state.posts];
       state.status = 'loaded';
-      state.error = 'success';
+      state.error = null;
     })
     .catch((err) => {
       state.error = defineError(err);
