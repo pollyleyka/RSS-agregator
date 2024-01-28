@@ -3,7 +3,9 @@
 [![basic check](https://github.com/pollyleyka/frontend-project-11/actions/workflows/actions.yml/badge.svg)](https://github.com/pollyleyka/frontend-project-11/actions/workflows/actions.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0fa0b848fbe00652c705/maintainability)](https://codeclimate.com/github/pollyleyka/frontend-project-11/maintainability)
 
-[RSS agregator](https://frontend-project-11-murex.vercel.app)
+# RSS aggregator <img align="right" src="https://cdn-icons-png.flaticon.com/512/124/124033.png" width="50">
+
+### [Visit the website!](https://frontend-project-11-murex.vercel.app)
 
 ### Description
 Rss Reader a news aggregator, also termed a feed aggregator, feed reader, news reader, RSS reader, or simply an aggregator is client software or a web application that aggregates syndicated web content such as online newspapers, blogs, podcasts, and video blogs (vlogs) in one location for easy viewing. The updates distributed may include journal tables of contents, podcasts, videos, and news items.
@@ -21,7 +23,7 @@ Posts are updated automatically in real time.
 
 1. Clone the repository with the following command:
 ```sh 
-git clone https://github.com/pollyleyka/frontend-project-11
+git clone https://github.com/pollyleyka/RSS-agregator
 ```
 
 2. Set up and run the RSS reader developer mode using the following commands:
